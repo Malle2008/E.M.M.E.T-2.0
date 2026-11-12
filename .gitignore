@@ -1,3 +1,4 @@
 git_lathund.txt
 __pycache__/*
 stored_images/*
+.env
