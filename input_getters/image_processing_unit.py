@@ -17,7 +17,8 @@ def capture_image():
 
 def to_grayscale(img, thresh): 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    final = _, binary_inv = cv2.threshold(gray, 255*thresh, 255, cv2.THRESH_BINARY_INV)
+    g = cv2.GaussianBlur(gray, (5, 5), 0)
+    _, binary_inv = cv2.threshold(g, 255*thresh, 255, cv2.THRESH_BINARY_INV)
     cv2.imwrite("final.png", binary_inv)
     
 if __name__ == "__main__": 

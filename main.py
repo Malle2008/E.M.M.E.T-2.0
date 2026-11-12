@@ -4,4 +4,4 @@ from pid import PID
 
 
 image = ipu.capture_image()
-ipu.to_grayscale(image, 0.4)
+ipu.process_img(image, 0.4)
