@@ -1,8 +1,22 @@
+import time
 import input_getters.image_processing_unit as ipu
 import input_getters.sensor_processing_unit as spu
 from pid import PID 
+import cv2
+import numpy as np
+import calibration.calibration as calibration
+
+ipu.start_image_cap()
 
 
-image = ipu.capture_image()
-ipu.process_img(image)
+green_lower = np.array([42, 42, 0])
+green_upper = np.array([79, 255, 255])
 
+while ipu.get_latest_image() is None:
+    time.sleep(0.01)
+
+latest_img = ipu.get_latest_image()
+
+
+green_lower, green_upper = calibration.calibrate_green()
+print(green_lower, green_upper)
