@@ -8,7 +8,6 @@ import calibration.calibration as calibration
 
 ipu.start_image_cap()
 
-
 green_lower = np.array([42, 42, 0])
 green_upper = np.array([79, 255, 255])
 
@@ -20,4 +19,5 @@ latest_img = ipu.get_latest_image()
 #green_lower, green_upper = calibration.calibrate_green()
 #print(green_lower, green_upper)
 
-area, pos = ipu.get_green_squares(latest_img, green_lower=green_lower, green_upper=green_upper, save_debug_images=True)
+area, pos = ipu.get_green_squares(latest_img, green_lower=green_lower, green_upper=green_upper, save_debug_images=False)
+skeleton = ipu.process_img(latest_img, save_debug_images=True)

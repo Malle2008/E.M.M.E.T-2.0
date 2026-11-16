@@ -4,6 +4,7 @@ from os import getenv as genv
 from dotenv import load_dotenv
 import numpy as np
 import skimage
+import skan
 
 load_dotenv()
 
@@ -44,10 +45,23 @@ def process_img(img, save_debug_images=False):
         return None
     keep = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
     skel = skimage.morphology.skeletonize(lab == keep)
+    skel2 = skan.Skeleton(skel)
     if save_debug_images:
         cv2.imwrite(genv("img_folder") + "mask.png", morph)
         cv2.imwrite(genv("img_folder") + "skeleton.png", skel.astype(np.uint8) * 255)
-    return skel
+        
+        base_gray = (skel2.skeleton_image > 0).astype(np.uint8) * 255
+        vis_image = cv2.cvtColor(base_gray, cv2.COLOR_GRAY2BGR)
+        
+        junction_coords = skel2.coordinates[skel2.degrees >= 3]
+        for y, x in junction_coords:
+            cv2.circle(vis_image, (int(x), int(y)), radius=3, color=(0, 0, 255), thickness=-1)
+            
+        cv2.imwrite(genv("img_folder") + "output_mask.png", vis_image)
+    return skel2
+
+def get_junctions(skeleton): 
+    pass
 
 
 def get_green_squares(img, green_upper, green_lower, save_debug_images=False):
