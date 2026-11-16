@@ -50,7 +50,17 @@ def process_img(img, save_debug_images=False):
     return skel
 
 
-def get_green_squares(img, green_upper, green_lower, save_debug_images=False): 
-    green_mask = cv2.inRange(img, green_lower, green_upper)
-    cv2.imwrite(genv("img_folder") + "green_mask.png", green_mask)
-    return green_mask
+def get_green_squares(img, green_upper, green_lower, save_debug_images=False):
+    hsv_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)   # same conversion as the calibration
+    green_mask = cv2.inRange(hsv_image, np.array(green_lower), np.array(green_upper))
+    green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
+
+    component_count, labels, stats, centroids = cv2.connectedComponentsWithStats(green_mask)
+    if component_count < 2:
+        return None, None
+
+    largest_component_index = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
+    if save_debug_images:
+        cv2.imwrite(genv("img_folder") + "green_mask.png", (labels == largest_component_index).astype(np.uint8) * 255)
+
+    return stats[largest_component_index, cv2.CC_STAT_AREA], tuple(centroids[largest_component_index].astype(int))

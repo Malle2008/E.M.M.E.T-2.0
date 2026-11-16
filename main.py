@@ -17,6 +17,7 @@ while ipu.get_latest_image() is None:
 
 latest_img = ipu.get_latest_image()
 
+#green_lower, green_upper = calibration.calibrate_green()
+#print(green_lower, green_upper)
 
-green_lower, green_upper = calibration.calibrate_green()
-print(green_lower, green_upper)
+area, pos = ipu.get_green_squares(latest_img, green_lower=green_lower, green_upper=green_upper, save_debug_images=True)
