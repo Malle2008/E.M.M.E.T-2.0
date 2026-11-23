@@ -1,31 +1,51 @@
-# Linjeföljare
+# EMMET 2.0 – Projektbeskrivning
 
-En linjeföljande robot byggd med Raspberry Pi 5, LEGO SPIKE-motorer och en reflexsensor-array. En kamera ska hjälpa roboten att se hur linjen fortsätter framåt, så att den kan köra mjukare och effektivare.
+Vi utvecklar EMMET 2.0, en autonom räddningsrobot för tävlingen RoboCupJunior Rescue Line. Målet är att vår robot ska följa en svart linje genom en utmanande bana,
+identifiera och samla upp offer samt transportera dem till rätt plats i en evakueringszon – snabbt och helt på egen hand.
 
-> Projektet är under utveckling. Mycket är ännu inte bestämt, och det här dokumentet beskriver bara det som redan är klart.
+## Bakgrund
+
+RoboCupJunior Rescue Line är en tävling där autonoma robotar genomför ett simulerat
+räddningsuppdrag. Banan är uppbyggd av moduler och innehåller bland annat korsningar,
+luckor, farthinder, ojämn terräng och hinder som roboten måste ta sig förbi. I banans
+slutskede finns en evakueringszon, där offer i form av kulor ska samlas upp och sorteras. Hela uppdraget ska genomföras utan mänsklig inblandning.
 
 ## Mål
 
-- Följa en linje stabilt och mjukt.
-- Använda kameran för att förutse linjens form framåt.
-- Låta sensorarrayen hålla roboten exakt på linjen.
+- Följa linjen stabilt och mjukt genom hela banan.
+- Ta oss förbi banans hinder och svåra avsnitt utan att fastna.
+- Identifiera och samla upp offren.
+- Leverera offren till rätt plats i evakueringszonen.
+- Genomföra uppdraget helt autonomt och på kortast möjliga tid.
 
 ## Hårdvara
 
 - Raspberry Pi 5
-- Kameramodul till Raspberry Pi
-- Pololu QTR-8A Reflectance Sensor Array (8 sensorer)
+- Kameramodul för Raspberry Pi
+- Pololu QTR-8A reflexiv sensorarray (8 sensorer)
 - Raspberry Pi Build HAT
 - LEGO SPIKE-motorer
 
-## Grundidé
+## Teknisk lösning
 
-Styrningen delas i två steg. Sensorarrayen styr roboten längs linjen med en PID-regulator. Kameran tittar längre fram och ger information som påverkar hur roboten kör. Hur de två stegen exakt samverkar är ännu inte bestämt.
+Vår styrning bygger på två samverkande delar:
 
-## Status
+- **Sensorlagret** läser av linjens position under roboten. Med hjälp av en
+  PID-regulator hålls roboten centrerad på linjen och kan följa den exakt.
+- **Kameran** blickar framåt längs linjen för att förutse dess form och gör att
+  roboten kan köra mjukare och effektivare. Vi använder också kameran för att känna
+  igen banans gröna inslag vid bestämda svängar.
 
-Under utveckling. Det finns inga installations- eller användningsinstruktioner än.
+Hur vi ska kombinera sensor- och kamerainformationen är ännu under utveckling. Även
+mekanismen för att samla upp kulorna återstår att färdigställa.
 
-## Licens
+## Projektstatus
 
-Inte bestämd ännu.
+Vi är under aktiv utveckling. Vår kamerabaserade linjedetektion och igenkänning av
+banans gröna element fungerar och testas. Kvar att utveckla är sensorinläsning,
+PID-reglering, motorstyrning och uppsamlingsmekanism, samt att samordna delarna till
+en komplett autonom robot.
+
+## Om oss
+
+Vi är ett studentlag som tillsammans utvecklar EMMET 2.0 inför tävlingen.

@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import numpy as np
 import skimage
 import skan
+import math
 
 load_dotenv()
 
@@ -47,6 +48,7 @@ def process_img(img, save_debug_images=False):
     skel = skimage.morphology.skeletonize(lab == keep)
     skel2 = skan.Skeleton(skel)
     if save_debug_images:
+        cv2.imwrite(genv("img_folder") + "org.png", img)
         cv2.imwrite(genv("img_folder") + "mask.png", morph)
         cv2.imwrite(genv("img_folder") + "skeleton.png", skel.astype(np.uint8) * 255)
         
@@ -60,21 +62,38 @@ def process_img(img, save_debug_images=False):
         cv2.imwrite(genv("img_folder") + "output_mask.png", vis_image)
     return skel2
 
-def get_junctions(skeleton): 
-    pass
+def get_junctions(skeleton, threshold=100):
+    coords = skeleton.coordinates[skeleton.degrees >= 3]
+    clusters = []
+
+    while len(coords):
+        cluster, remaining = [coords[0]], coords[1:]
+        while True:
+            close = np.any(np.linalg.norm(remaining[:, None] - cluster, axis=2) < threshold, axis=1)
+            if not close.any(): break
+            cluster.extend(remaining[close])
+            remaining = remaining[~close]
+        clusters.append(np.median(cluster, axis=0).astype(int))
+        coords = remaining
+
+    return np.array(clusters)
 
 
-def get_green_squares(img, green_upper, green_lower, save_debug_images=False):
-    hsv_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)   # same conversion as the calibration
+def get_green_squares(img, green_upper, green_lower, min_green_area=3000, save_debug_images=False):
+    hsv_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     green_mask = cv2.inRange(hsv_image, np.array(green_lower), np.array(green_upper))
     green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
 
     component_count, labels, stats, centroids = cv2.connectedComponentsWithStats(green_mask)
-    if component_count < 2:
+    valid_components = [i for i in range(1, component_count) if stats[i, cv2.CC_STAT_AREA] > min_green_area]
+
+    if not valid_components:
         return None, None
 
-    largest_component_index = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
     if save_debug_images:
-        cv2.imwrite(genv("img_folder") + "green_mask.png", (labels == largest_component_index).astype(np.uint8) * 255)
+        cv2.imwrite(genv("img_folder") + "green_mask.png", np.isin(labels, valid_components).astype(np.uint8) * 255)
 
-    return stats[largest_component_index, cv2.CC_STAT_AREA], tuple(centroids[largest_component_index].astype(int))
+    areas = [stats[i, cv2.CC_STAT_AREA] for i in valid_components]
+    centers = [list(centroids[i]) for i in valid_components]
+
+    return areas, centers
