@@ -2,11 +2,12 @@ import time
 import cv2
 import numpy as np
 import input_getters.image_processing_unit as ipu
-import main
+import functions
 
 ipu.start_image_cap()
 while ipu.get_latest_image() is None:
     time.sleep(0.01)
+
 
 last_processed_count = 0
 processed_frames = 0
@@ -14,6 +15,7 @@ camera_fps = 0.0
 processing_fps = 0.0
 last_report_time = time.time()
 last_report_count = ipu.get_frame_count()
+
 
 while True:
     current_count = ipu.get_frame_count()
@@ -25,9 +27,9 @@ while True:
 
         juncs = ipu.get_junctions(skeleton)
         
-        green_lower = np.array([30, 33, 60])
-        green_upper = np.array([95, 102, 150])
-        
+        green_lower=np.array([37, 27, 89])
+        green_upper=np.array([81, 255, 158])
+                
         _, pos = ipu.get_green_squares(frame, green_lower=green_lower, green_upper=green_upper, save_debug_images=True)
         before = frame.copy()
         after = frame.copy()
@@ -44,7 +46,7 @@ while True:
                     for xy in juncs:
                         print("pos: ", pos, type(pos))
                         if pos != None: 
-                            dirs = main.get_turn_decision((xy[1],xy[0]), greens=pos)
+                            dirs = functions.get_turn_decision((xy[1],xy[0]), greens=pos)
                         #after = cv2.circle(after, (int(xy[1]), int(xy[0])), 10, (255, 0, 0), 3)
                         cv2.putText(after, str(dirs), (int(xy[1]), int(xy[0])), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
             

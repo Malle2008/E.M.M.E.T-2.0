@@ -8,10 +8,10 @@ import calibration.calibration as calibration
 
 
 ipu.start_image_cap()
-print("started ")
+print("started")
 
-green_lower = np.array([30, 33, 60])
-green_upper = np.array([95, 102, 150])
+green_lower=np.array([37, 27, 89])
+green_upper=np.array([81, 255, 158])
 
 while ipu.get_latest_image() is None:
     time.sleep(0.01)
@@ -19,7 +19,6 @@ while ipu.get_latest_image() is None:
 latest_img = ipu.get_latest_image()
 print("got image")
 
-#latest_img = cv2.imread()
 #green_lower, green_upper = calibration.calibrate_green()
 #print(green_lower, green_upper)
 
@@ -38,15 +37,3 @@ junctions = [[216, 330], [230, 152], [235,  32], [243,  21], [428, 156]]
 print(area)
 print(pos)
 print(junctions)
-
-def get_turn_decision(junction, greens, threshold=100):
-    directions = {"tr": False, "tl": False, "br": False, "bl": False}
-    print("greens: ", greens, type(greens))
-    for green in greens:
-        dx, dy = green[0] - junction[0], green[1] - junction[1]
-
-        if np.hypot(dx, dy) <= threshold:
-            if dx > 0: directions["br" if dy > 0 else "tr"] = True
-            elif dx < 0: directions["bl" if dy > 0 else "tl"] = True
-
-    return directions
